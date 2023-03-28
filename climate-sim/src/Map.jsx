@@ -1,28 +1,28 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "react-sidebar";
 import {
   MapContainer,
   TileLayer,
   Circle,
   Popup,
   LayerGroup,
-  Pane,
 } from "react-leaflet";
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import TimeSlider from "./TimeSlider";
 import { getYearWithFractionalMonth, celciusToFernheit } from "./utils";
-const mql = window.matchMedia(`(min-width: 800px)`);
 
 function Map() {
   const [tempData, setTempData] = useState([]);
   const [timeArray, setTimeArray] = useState([]);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [sidebarDocked, setSidebarDocked] = useState(mql.matches);
   const [values, setValues] = useState([0]);
   const [dateString, setDateString] = useState("4/1/1880");
   const [station, setStation] = useState("");
   const [landTemp, setLandTemp] = useState("");
+  const [collapsed, setCollapsed] = useState(false);
+
+  const toggleCollapse = () => {
+    setCollapsed(!collapsed);
+  };
 
   useEffect(() => {
     // const url =
@@ -71,14 +71,14 @@ function Map() {
       setStation(record.station);
     }
   }, [tempData, dateString]);
-  const onSetOpen = (open) => {
-    setSidebarOpen(open);
-  };
   return (
     <Container fluid style={{ height: "100vh", overflow: "hidden" }}>
       <Row style={{ height: "100%" }}>
         <Col sm={12}>
-          <div className="d-flex flex-column h-100" style={{ height: "100%" }}>
+          <div
+            className="d-flex flex-column h-100"
+            style={{ position: "relative", height: "100%" }}
+          >
             <MapContainer
               center={[51.505, -0.09]}
               zoom={3}
@@ -89,12 +89,29 @@ function Map() {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              <Pane style={{ zIndex: 500 }}>
+              <LayerGroup>
+                <Circle center={[51.505, -0.09]} radius={2000}>
+                  <Popup>
+                    Example Circle Popup <br />
+                    Latitude: 51.505 <br />
+                    Longitude: -0.09
+                  </Popup>
+                </Circle>
+              </LayerGroup>
+            </MapContainer>
+            <div
+              style={{ zIndex: 500, position: "absolute", top: 100, left: 10 }}
+            >
+              <button className="btn btn-light m-2" onClick={toggleCollapse}>
+                {collapsed ? (
+                  <i className="fa fa-chevron-right" />
+                ) : (
+                  <i className="fa fa-chevron-left" />
+                )}
+              </button>
+              {!collapsed && (
                 <div
                   style={{
-                    position: "relative",
-                    top: 10,
-                    left: 10,
                     backgroundColor: "rgba(255, 255, 255, 0.5)",
                     padding: 5,
                   }}
@@ -113,23 +130,14 @@ function Map() {
                     </p>
                     <p>
                       Average Global Land Temperature:{" "}
-                      <span
-                        style={{ fontWeight: "bold" }}
-                      >{`${celciusToFernheit(landTemp)} °F`}</span>
+                      <span style={{ fontWeight: "bold" }}>
+                        {`${celciusToFernheit(landTemp)} °F`}
+                      </span>
                     </p>
                   </div>
                 </div>
-              </Pane>
-              <LayerGroup>
-                <Circle center={[51.505, -0.09]} radius={2000}>
-                  <Popup>
-                    Example Circle Popup <br />
-                    Latitude: 51.505 <br />
-                    Longitude: -0.09
-                  </Popup>
-                </Circle>
-              </LayerGroup>
-            </MapContainer>
+              )}
+            </div>
             {timeArray.length > 0 && (
               <TimeSlider
                 timeArray={timeArray}
