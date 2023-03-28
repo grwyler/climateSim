@@ -6,11 +6,12 @@ import {
   Circle,
   Popup,
   LayerGroup,
+  Pane,
 } from "react-leaflet";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import axios from "axios";
 import TimeSlider from "./TimeSlider";
-import { getYearWithFractionalMonth } from "./utils";
+import { getYearWithFractionalMonth, celciusToFernheit } from "./utils";
 const mql = window.matchMedia(`(min-width: 800px)`);
 
 function Map() {
@@ -76,13 +77,29 @@ function Map() {
   return (
     <Container fluid style={{ height: "100vh", overflow: "hidden" }}>
       <Row style={{ height: "100%" }}>
-        <Col sm={3}>
-          <Sidebar
-            sidebar={
-              <Container>
-                <Row>
-                  <Col>
-                    <h2 className="text-center">Data</h2>
+        <Col sm={12}>
+          <div className="d-flex flex-column h-100" style={{ height: "100%" }}>
+            <MapContainer
+              center={[51.505, -0.09]}
+              zoom={3}
+              scrollWheelZoom={true}
+              className="h-100"
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              <Pane style={{ zIndex: 500 }}>
+                <div
+                  style={{
+                    position: "relative",
+                    top: 10,
+                    left: 10,
+                    backgroundColor: "rgba(255, 255, 255, 0.5)",
+                    padding: 5,
+                  }}
+                >
+                  <div className="m-3">
                     <p>
                       Global Temperature Anomaly:{" "}
                       <span
@@ -91,59 +108,144 @@ function Map() {
                           color: station <= 0 ? "blue" : "red",
                         }}
                       >
-                        {station}
+                        {`${celciusToFernheit(station)} °F`}
                       </span>
                     </p>
                     <p>
                       Average Global Land Temperature:{" "}
-                      <span style={{ fontWeight: "bold" }}>{landTemp}</span>
+                      <span
+                        style={{ fontWeight: "bold" }}
+                      >{`${celciusToFernheit(landTemp)} °F`}</span>
                     </p>
-                  </Col>
-                </Row>
-              </Container>
-            }
-            open={sidebarOpen}
-            docked={sidebarDocked}
-            onSetOpen={onSetOpen}
-          >
-            <div
-              className="d-flex flex-column h-100"
-              style={{ height: "100%" }}
-            >
-              <MapContainer
-                center={[51.505, -0.09]}
-                zoom={3}
-                scrollWheelZoom={true}
-                className="h-100"
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <LayerGroup>
-                  <Circle center={[51.505, -0.09]} radius={2000}>
-                    <Popup>
-                      Example Circle Popup <br />
-                      Latitude: 51.505 <br />
-                      Longitude: -0.09
-                    </Popup>
-                  </Circle>
-                </LayerGroup>
-              </MapContainer>
-              {timeArray.length > 0 && (
-                <TimeSlider
-                  timeArray={timeArray}
-                  values={values}
-                  setValues={setValues}
-                  dateString={dateString}
-                  setDateString={setDateString}
-                />
-              )}
-            </div>
-          </Sidebar>
+                  </div>
+                </div>
+              </Pane>
+              <LayerGroup>
+                <Circle center={[51.505, -0.09]} radius={2000}>
+                  <Popup>
+                    Example Circle Popup <br />
+                    Latitude: 51.505 <br />
+                    Longitude: -0.09
+                  </Popup>
+                </Circle>
+              </LayerGroup>
+            </MapContainer>
+            {timeArray.length > 0 && (
+              <TimeSlider
+                timeArray={timeArray}
+                values={values}
+                setValues={setValues}
+                dateString={dateString}
+                setDateString={setDateString}
+              />
+            )}
+          </div>
         </Col>
       </Row>
     </Container>
+    //  <Container fluid style={{ height: "100vh", overflow: "hidden" }}>
+    //   <Row style={{ height: "100%" }}>
+    //     <Col sm={3}>
+    //       <Sidebar
+    //         sidebar={
+    //           <Container>
+    //             <Row>
+    //               <Col>
+    //                 <h2 className="text-center">Data</h2>
+    //                 <p>
+    //                   Global Temperature Anomaly:{" "}
+    //                   <span
+    //                     style={{
+    //                       fontWeight: "bold",
+    //                       color: station <= 0 ? "blue" : "red",
+    //                     }}
+    //                   >
+    //                     {`${celciusToFernheit(station)} °F`}
+    //                   </span>
+    //                 </p>
+    //                 <p>
+    //                   Average Global Land Temperature:{" "}
+    //                   <span
+    //                     style={{ fontWeight: "bold" }}
+    //                   >{`${celciusToFernheit(landTemp)} °F`}</span>
+    //                 </p>
+    //               </Col>
+    //             </Row>
+    //           </Container>
+    //         }
+    //         open={sidebarOpen}
+    //         docked={sidebarDocked}
+    //         onSetOpen={onSetOpen}
+    //       >
+    //         <div
+    //           className="d-flex flex-column h-100"
+    //           style={{ height: "100%" }}
+    //         >
+    //           <MapContainer
+    //             center={[51.505, -0.09]}
+    //             zoom={3}
+    //             scrollWheelZoom={true}
+    //             className="h-100"
+    //           >
+    //             <TileLayer
+    //               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    //               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    //             />
+    //             <Pane style={{ zIndex: 500 }}>
+    //               <div
+    //                 style={{
+    //                   position: "absolute",
+    //                   top: 10,
+    //                   left: 10,
+    //                   backgroundColor: "white",
+    //                   padding: 5,
+    //                 }}
+    //               >
+    //                 <div className="m-5">
+    //                   <p>
+    //                     Global Temperature Anomaly:{" "}
+    //                     <span
+    //                       style={{
+    //                         fontWeight: "bold",
+    //                         color: station <= 0 ? "blue" : "red",
+    //                       }}
+    //                     >
+    //                       {`${celciusToFernheit(station)} °F`}
+    //                     </span>
+    //                   </p>
+    //                   <p>
+    //                     Average Global Land Temperature:{" "}
+    //                     <span
+    //                       style={{ fontWeight: "bold" }}
+    //                     >{`${celciusToFernheit(landTemp)} °F`}</span>
+    //                   </p>
+    //                 </div>
+    //               </div>
+    //             </Pane>
+    //             <LayerGroup>
+    //               <Circle center={[51.505, -0.09]} radius={2000}>
+    //                 <Popup>
+    //                   Example Circle Popup <br />
+    //                   Latitude: 51.505 <br />
+    //                   Longitude: -0.09
+    //                 </Popup>
+    //               </Circle>
+    //             </LayerGroup>
+    //           </MapContainer>
+    //           {timeArray.length > 0 && (
+    //             <TimeSlider
+    //               timeArray={timeArray}
+    //               values={values}
+    //               setValues={setValues}
+    //               dateString={dateString}
+    //               setDateString={setDateString}
+    //             />
+    //           )}
+    //         </div>
+    //       </Sidebar>
+    //     </Col>
+    //   </Row>
+    // </Container>
   );
 }
 

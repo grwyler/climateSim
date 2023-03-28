@@ -29,3 +29,9 @@ export const getYearWithFractionalMonth = (dateString) => {
     .toString();
   return yearWithFractionalMonth === "NaN" ? "" : yearWithFractionalMonth;
 };
+
+export const celciusToFernheit = (celsiusString) => {
+  const celsius = parseFloat(celsiusString);
+  const fahrenheit = (celsius * 9) / 5 + 32;
+  return fahrenheit.toFixed(2); // Round to 2 decimal places
+};
