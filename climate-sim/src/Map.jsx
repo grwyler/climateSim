@@ -16,8 +16,8 @@ function Map() {
   const [timeArray, setTimeArray] = useState([]);
   const [values, setValues] = useState([0]);
   const [dateString, setDateString] = useState("4/1/1880");
-  const [station, setStation] = useState("");
-  const [landTemp, setLandTemp] = useState("");
+  const [station, setStation] = useState("-0.15");
+  const [landTemp, setLandTemp] = useState("0.14");
   const [collapsed, setCollapsed] = useState(false);
 
   const toggleCollapse = () => {
@@ -102,7 +102,7 @@ function Map() {
             <div
               style={{ zIndex: 500, position: "absolute", top: 100, left: 10 }}
             >
-              <button className="btn btn-light m-2" onClick={toggleCollapse}>
+              <button className="btn btn-light mb-2" onClick={toggleCollapse}>
                 {collapsed ? (
                   <i className="fa fa-chevron-right" />
                 ) : (
