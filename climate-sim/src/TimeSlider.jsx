@@ -1,21 +1,29 @@
 import React, { useState } from "react";
 import { Range } from "react-range";
+import { valuesToDates, dateToValue, getMinMaxDates } from "./utils";
 
-function TimeSlider() {
-  const [months, setMonths] = useState([0]);
-
-  const formatLabel = (value) => {
-    return `${value} / 12`;
-  };
+function TimeSlider({
+  timeArray,
+  values,
+  setValues,
+  dateString,
+  setDateString,
+}) {
+  const { minDate, maxDate } = getMinMaxDates(timeArray);
 
   return (
     <div className="m-5">
       <Range
-        step={1}
+        step={1 / (timeArray.length - 1)}
         min={0}
-        max={11}
-        values={months}
-        onChange={(values) => setMonths([values])}
+        max={1}
+        values={values.map((value) => dateToValue(value, minDate, maxDate))}
+        onChange={(values) => {
+          setValues(valuesToDates(values, minDate, maxDate));
+          setDateString(
+            valuesToDates(values, minDate, maxDate)[0].toLocaleDateString()
+          );
+        }}
         renderTrack={({ props, children }) => (
           <div
             {...props}
@@ -39,43 +47,14 @@ function TimeSlider() {
               width: "20px",
               borderRadius: "50%",
               backgroundColor: "#999",
+              cursor: "pointer",
             }}
           />
         )}
-        renderLabel={({ value }) => (
-          <div
-            style={{
-              color: "#999",
-              fontSize: "10px",
-              fontFamily: "Arial, sans-serif",
-            }}
-          >
-            {formatLabel(value)}
-          </div>
-        )}
       />
-      {getMonthName(months[0])}
+      <div className="text-center pt-3">{dateString}</div>
     </div>
   );
-}
-
-function getMonthName(monthIndex) {
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
-  return months[monthIndex];
 }
 
 export default TimeSlider;
